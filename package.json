@@ -1,0 +1,29 @@
+{
+  "name": "ggsw",
+  "version": "1.0.0",
+  "description": "A Generic Grocery Shopping Website (GGSW) for YSC3232: Software Engineering.",
+  "main": "index.js",
+  "scripts": {
+    "backend" : "nodemon backend/index.js",
+    "frontend" : "npm run dev --prefix frontend",
+    "dev" : "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngKuKuehs/ggsw.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AngKuKuehs/ggsw/issues"
+  },
+  "homepage": "https://github.com/AngKuKuehs/ggsw#readme",
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.1",
+    "nodemon": "^3.1.9"
+  }
+}
