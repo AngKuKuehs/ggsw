@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A Generic Grocery Shopping Website (GGSW) for YSC3232: Software Engineering.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "backend": "nodemon backend/index.js",
     "frontend": "npm run dev --prefix frontend",
