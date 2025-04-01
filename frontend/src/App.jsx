@@ -2,9 +2,9 @@ import './App.css'
 
 function App() {
   return (
-    <>
-      Generic Grocery Shopping Website
-    </>
+  <h1 class="text-3xl font-bold underline">
+    Generic Grocery Shopping Website
+  </h1>
   )
 }
 
