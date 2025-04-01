@@ -10,7 +10,7 @@ const DB_URIS = {
 
 const connectDB = async () => {
     try {
-        const environment = process.env.db;
+        const environment = process.env.NODE_ENV;
         const mongoUri = DB_URIS[environment];
 
         if (!mongoUri) throw new Error(`MongoDB URI missing for ${environment} environment`);
