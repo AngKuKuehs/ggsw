@@ -22,7 +22,7 @@ const Header = () => {
         {/* Left Links */}
         <nav className="flex gap-6 text-gray-700 font-medium text-sm">
           <span className="cursor-pointer hover:text-green-700">Home ⌄</span>
-          <span className="cursor-pointer font-bold text-black">Shop ⌄</span>
+          <span className="cursor-pointer hover:text-green-700">Shop ⌄</span>
           <span className="cursor-pointer hover:text-green-700">Pages ⌄</span>
           <span className="cursor-pointer hover:text-green-700">Blog ⌄</span>
           <span className="cursor-pointer hover:text-green-700">About Us</span>

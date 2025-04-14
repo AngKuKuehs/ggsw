@@ -20,13 +20,8 @@ const Profile = () => {
   const sidebarItems = [
     { label: "Profile", active: true },
     { label: "Payment methods", hasDot: true },
-    { label: "Address" },
-    { label: "Preferences" },
-    { label: "Vouchers", hasDot: true },
-    { label: "Lucky draw" },
+    { label: "Address" }
   ];
-
-  const membershipItems = ["Link membership", "Digital Club"];
 
   return (
     <>
@@ -46,18 +41,6 @@ const Profile = () => {
                 >
                   {item.label}
                   {item.hasDot && <span className="w-2 h-2 rounded-full bg-red-500"></span>}
-                </li>
-              ))}
-            </ul>
-
-            <h3 className="text-sm text-gray-500 font-semibold mt-6 mb-2">Membership</h3>
-            <ul className="space-y-3">
-              {membershipItems.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="text-sm px-2 py-1 rounded-md hover:bg-gray-100 cursor-pointer"
-                >
-                  {item}
                 </li>
               ))}
             </ul>

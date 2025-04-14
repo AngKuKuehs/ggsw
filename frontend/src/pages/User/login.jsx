@@ -24,7 +24,7 @@ const Login = () => {
   return (
     <>
       <Header />
-      <div className="flex items-center justify-center px-4 py-10 bg-gray-50 min-h-screen">
+      <div className="flex items-center justify-center px-4 py-4 bg-gray-50 min-h-screen">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-bold mb-6 text-center text-green-700">
             Welcome Back

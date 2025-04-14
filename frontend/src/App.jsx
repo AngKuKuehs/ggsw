@@ -1,11 +1,11 @@
 import './App.css';
-import Profile from './pages/User/Profile';
+import TestPage from './pages/test';
 
 function App() {
   return (
     <>
       <main className="min-h-[80vh]">
-        <Profile />
+        <TestPage />
       </main>
     </>
   );
