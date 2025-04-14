@@ -1,11 +1,14 @@
-import './App.css'
+import './App.css';
+import TestPage from './pages/test';
 
 function App() {
   return (
-  <h1 class="text-3xl font-bold underline">
-    Generic Grocery Shopping Website
-  </h1>
-  )
+    <>
+      <main className="min-h-[80vh]">
+        <TestPage />
+      </main>
+    </>
+  );
 }
 
-export default App
+export default App;
