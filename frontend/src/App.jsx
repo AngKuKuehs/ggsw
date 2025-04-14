@@ -1,13 +1,10 @@
-import './App.css';
-import TestPage from './pages/test';
+import CheckoutPage from "./pages/Checkout";
 
 function App() {
   return (
-    <>
-      <main className="min-h-[80vh]">
-        <TestPage />
-      </main>
-    </>
+    <div className="bg-white min-h-screen">
+      <CheckoutPage />
+    </div>
   );
 }
 
