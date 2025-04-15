@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 
 import userRoutes from "./routes/userRoutes.js"
+import categoryRoutes from "./routes/categoryRoutes.js"
 
 dotenv.config();
 dotenv.config({ path: '.env' }); 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 // api routes
 app.use("/api/users", userRoutes);
+app.use("/api/category", categoryRoutes);
 
 app.get("/", (req, res) => {
     res.send("Root");
