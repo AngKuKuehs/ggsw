@@ -1,3 +1,4 @@
+// src/pages/MyCart.jsx
 import React, { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
@@ -24,30 +25,29 @@ const MyCartPage = () => {
 
   const handleQuantityChange = (id, quantity) => {
     if (quantity < 1) return;
-    setCartItems((prev) =>
-      prev.map((item) =>
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
         item.id === id ? { ...item, quantity } : item
       )
     );
   };
 
   const handleRemoveItem = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
   const handleCheckout = () => {
-    alert("Redirecting to checkout...");
+    alert("Proceeding to checkout...");
   };
 
   return (
     <>
       <Header />
-
       <main className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
           {/* Cart Items */}
@@ -71,7 +71,6 @@ const MyCartPage = () => {
           <CartSummary total={totalPrice} onCheckout={handleCheckout} />
         </div>
       </main>
-
       <Footer />
     </>
   );
