@@ -2,7 +2,7 @@ import express from "express";
 import formidable from "express-formidable";
 const router = express.Router();
 
-import {authenticate, authorizeAdmin} from "../middlewares/authMIddleware.js";
+import {authenticate, authorizeAdmin} from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
 
 import { addProduct, updateProduct, removeProduct, getProducts, getProductById, addProductReview, getTopProducts } from "../controllers/productController.js";
