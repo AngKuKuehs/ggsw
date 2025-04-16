@@ -5,7 +5,7 @@ import Footer from "../../components/footer";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -15,22 +15,52 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-
-    console.log("Registration data submitted:", formData);
-
-    setFormData({
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/users/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // To allow cookies (if your backend sets one)
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+  
+      if (!response.ok) {
+        alert(response.body)
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+  
+      const data = await response.json();
+      console.log("Registration successful:", data);
+      alert("Account created successfully!");
+  
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+  
+      // Optionally redirect to login
+      // navigate("/login");
+  
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
   return (
@@ -45,9 +75,9 @@ const Register = () => {
             <div>
               <input
                 type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
+                name="username"
+                placeholder="Username"
+                value={formData.username}
                 onChange={handleChange}
                 required
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
