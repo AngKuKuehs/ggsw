@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // Add useLocation
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import ProductCard from "../../components/ProductCard";
@@ -23,29 +24,66 @@ const ALL_CATEGORIES = [
 
 const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]); // New state for filtered products
   const [visibleCount, setVisibleCount] = useState(12);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sort, setSort] = useState("");
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
   const [maxPrice, setMaxPrice] = useState(100);
 
-useEffect(() => {
+  const location = useLocation(); // Get URL query params
+
+  // Extract search query from URL
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
+<<<<<<< Updated upstream
         const res = await fetch("http://localhost:5000/api/product");
+=======
+        // Optionally, modify the fetch to include search query if backend supports it
+        const url = searchQuery
+          ? `${backendUrl}/api/product?search=${encodeURIComponent(searchQuery)}`
+          : `${backendUrl}/api/product`;
+        const res = await fetch(url);
+>>>>>>> Stashed changes
         const data = await res.json();
-        if (data?.products) {
-          setProducts(data.products);
-        } else {
-          setProducts(data); 
+        let fetchedProducts = data?.products || data;
+
+        // If backend doesn't handle search, filter client-side
+        if (searchQuery && !url.includes("search")) {
+          fetchedProducts = fetchedProducts.filter((product) =>
+            product.name?.toLowerCase().includes(searchQuery) ||
+            product.description?.toLowerCase().includes(searchQuery)
+          );
         }
+
+        setProducts(fetchedProducts);
+        setFilteredProducts(fetchedProducts); // Initialize filtered products
       } catch (err) {
         console.error("Error fetching products:", err);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [searchQuery]); // Re-fetch or filter when searchQuery changes
+
+  // Handle sorting (apply to filteredProducts)
+  useEffect(() => {
+    let sortedProducts = [...filteredProducts];
+    if (sort === "low-high") {
+      sortedProducts.sort((a, b) => a.price - b.price);
+    } else if (sort === "high-low") {
+      sortedProducts.sort((a, b) => b.price - a.price);
+    } else if (sort === "rating") {
+      sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sort === "latest") {
+      sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    setFilteredProducts(sortedProducts);
+  }, [sort, products]); // Re-sort when sort or products change
 
   const handleSortChange = (value) => {
     setSort(value);
@@ -150,21 +188,31 @@ useEffect(() => {
                 ]}
               />
 
-              <ProductGrid
-                products={products.slice(0, visibleCount)}
-                ProductCardComponent={ProductCard}
-              />
-
-              {/* Show More */}
-              {visibleCount < products.length && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={handleShowMore}
-                    className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition"
-                  >
-                    Show More Products
-                  </button>
+              {filteredProducts.length === 0 && searchQuery ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-600 text-lg">
+                    No matches found for "{searchQuery}".
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <ProductGrid
+                    products={filteredProducts.slice(0, visibleCount)}
+                    ProductCardComponent={ProductCard}
+                  />
+
+                  {/* Show More */}
+                  {visibleCount < filteredProducts.length && (
+                    <div className="flex justify-center mt-8">
+                      <button
+                        onClick={handleShowMore}
+                        className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition"
+                      >
+                        Show More Products
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 const MyCart = () => {
   const navigate = useNavigate();
 
+<<<<<<< Updated upstream
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -30,6 +31,40 @@ const MyCart = () => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id ? { ...item, quantity } : item
+=======
+  const loadCart = () => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
+      setCartItems(stored);
+    } catch {
+      setCartItems([]);
+    }
+  };
+
+  useEffect(() => {
+    loadCart();
+
+    const syncCart = () => loadCart();
+    window.addEventListener("cartUpdated", syncCart);
+    window.addEventListener("storage", syncCart); // in case of multi-tab
+
+    return () => {
+      window.removeEventListener("cartUpdated", syncCart);
+      window.removeEventListener("storage", syncCart);
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const handleQuantityChange = (id, newQuantity) => {
+    if (newQuantity <= 0) return handleRemove(id);
+
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+>>>>>>> Stashed changes
       )
     );
   };
@@ -69,7 +104,6 @@ const MyCart = () => {
             )}
           </div>
 
-          {/* Order Summary */}
           <CartSummary total={cartTotal} onCheckout={handleCheckout} />
         </div>
       </main>
