@@ -9,16 +9,6 @@ import {
 } from "../../components/ProductComponents";
 import { FiFilter, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
 
-// Dummy data
-const DUMMY_PRODUCTS = Array.from({ length: 20 }).map((_, i) => ({
-  id: i,
-  name: `Sample Product ${i + 1}`,
-  price: (Math.random() * 100).toFixed(2),
-  rating: Math.floor(Math.random() * 5) + 1,
-  image:
-    "https://images.unsplash.com/photo-1604908177524-402c5b7a7f5a?auto=format&fit=crop&w=500&q=60",
-}));
-
 const ALL_CATEGORIES = [
   "Vegetables",
   "Fruits",
@@ -39,13 +29,26 @@ const ProductListingPage = () => {
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
   const [maxPrice, setMaxPrice] = useState(100);
 
-  useEffect(() => {
-    setProducts(DUMMY_PRODUCTS);
+useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/product");
+        const data = await res.json();
+        if (data?.products) {
+          setProducts(data.products);
+        } else {
+          setProducts(data); 
+        }
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const handleSortChange = (value) => {
     setSort(value);
-    // Optional: re-sort products
   };
 
   const toggleSidebar = () => {
@@ -116,7 +119,10 @@ const ProductListingPage = () => {
                     <p className="font-medium mb-2">Rating</p>
                     <div className="space-y-1">
                       {[5, 4, 3, 2, 1].map((r) => (
-                        <label key={r} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <label
+                          key={r}
+                          className="flex items-center gap-2 text-sm cursor-pointer"
+                        >
                           <input type="radio" name="rating" />
                           <span className="flex text-yellow-400">
                             {Array.from({ length: r }).map((_, i) => (

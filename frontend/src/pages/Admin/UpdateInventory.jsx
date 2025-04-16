@@ -56,9 +56,10 @@ const UpdateInventoryPage = () => {
       data.append("brand", formData.brand);
       data.append("image", formData.image);
 
-      const response = await fetch(`${BackendURL}/api/products`, {
+      const response = await fetch(`${BackendURL}/api/product`, {
         method: "POST",
         body: data,
+        credentials: "include", // Include cookies
       });
 
       const result = await response.json();
