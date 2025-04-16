@@ -31,7 +31,7 @@ const CheckoutPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting Order:", formData);
-    navigate("/order-success"); // ✅ Navigate to order success page
+    navigate("/order-success"); // 
   };
 
   return (
