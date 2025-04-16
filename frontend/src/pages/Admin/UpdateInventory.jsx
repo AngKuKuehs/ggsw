@@ -13,7 +13,7 @@ const UpdateInventoryPage = () => {
     category: "",
     quantity: "",
     brand: "",
-    image: null,
+    image: "",
   });
 
   const handleChange = (e) => {
