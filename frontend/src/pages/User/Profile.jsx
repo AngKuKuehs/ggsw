@@ -12,12 +12,20 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      // Simulated user data – replace with actual fetch later
-      const data = {
-        name: "Angie Yoedzer", 
-        email: "yoedzera@gmail.com",
-      };
-      setUser(data);
+      try {
+      const response = await fetch(`${backendUrl}/api/users/profile`, {
+        method: "GET",
+        credentials: "include", 
+      });
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data);
+        } else {
+          throw new Error("Failed to fetch user profile.");
+        }
+      } catch (error) {
+        console.log(error)
+      }
     };
 
     fetchUser();
@@ -77,7 +85,7 @@ const Profile = () => {
             ) : (
               <>
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-1">{user.name}</h2>
+                  <h2 className="text-xl font-bold mb-1">{user.username}</h2>
                   <p className="text-sm text-gray-600">{user.email}</p>
                 </div>
 
