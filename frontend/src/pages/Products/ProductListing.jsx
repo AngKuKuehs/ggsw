@@ -9,18 +9,9 @@ import {
   Breadcrumbs,
 } from "../../components/ProductComponents";
 import { FiFilter, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
+import { useSearchParams } from "react-router";
 
-const ALL_CATEGORIES = [
-  "Vegetables",
-  "Fruits",
-  "Dairy",
-  "Beverages",
-  "Snacks",
-  "Bakery",
-  "Frozen",
-  "Meat",
-  "Seafood",
-];
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
@@ -30,6 +21,37 @@ const ProductListingPage = () => {
   const [sort, setSort] = useState("");
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
   const [maxPrice, setMaxPrice] = useState(100);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/category/categories`, {
+          method: "GET",
+          credentials: "include"
+        });
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const [searchParamsCat] = useSearchParams();
+  useEffect(() => {
+    const categoryName = searchParamsCat.get("category");
+    if (categoryName && categories.length > 0) {
+      const cat = categories.find(
+        c => c.name.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (cat) {
+        setSelectedCategories([cat._id]);
+      }
+  }}, [searchParamsCat, categories]);
 
   const location = useLocation(); // Get URL query params
 
@@ -40,7 +62,9 @@ const ProductListingPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/product");
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
+          credentials: "include"
+        });
         const data = await res.json();
         let fetchedProducts = data?.products || data;
 
@@ -89,6 +113,11 @@ const ProductListingPage = () => {
     setVisibleCount((prev) => prev + 12);
   };
 
+  const filteredProductsCat = products.filter(product =>
+    selectedCategories.length === 0 || selectedCategories.includes(product.category)
+  );
+
+
   return (
     <>
       <Header />
@@ -122,10 +151,18 @@ const ProductListingPage = () => {
                   <div>
                     <p className="font-medium mb-2">Category</p>
                     <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
-                      {ALL_CATEGORIES.map((cat) => (
-                        <label key={cat} className="text-sm">
-                          <input type="checkbox" className="mr-2" />
-                          {cat}
+                      {categories.map((cat) => (
+                        <label key={cat._id} className="text-sm">
+                          <input type="checkbox" className="mr-2" checked={selectedCategories.includes(cat._id)}
+                                  onChange={e => {
+                                    if (e.target.checked) {
+                                      setSelectedCategories([...selectedCategories, cat._id]);
+                                    } else {
+                                      setSelectedCategories(selectedCategories.filter(c => c !== cat._id));
+                                    }
+                                  }}
+                          />
+                          {cat.name}
                         </label>
                       ))}
                     </div>
@@ -189,7 +226,7 @@ const ProductListingPage = () => {
               ) : (
                 <>
                   <ProductGrid
-                    products={filteredProducts.slice(0, visibleCount)}
+                    products={filteredProductsCat.slice(0, visibleCount)}
                     ProductCardComponent={ProductCard}
                   />
 
