@@ -2,8 +2,29 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/footer";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const OrderSuccessPage = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const orderId = searchParams.get("orderId");
+  useEffect(() => {
+    if (!orderId) return;
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/${orderId}/pay`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        orderId: orderId,
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Payment successful:", data))
+    .catch(err => console.error("Payment error:", err));
+  }, [orderId])
   return (
     <>
       <Header />

@@ -55,9 +55,53 @@ const MyCart = () => {
     0
   );
 
-  const handleCheckout = () => {
-    navigate("/checkout");
-  };
+  const handleCheckout = async () => {
+    try {
+
+      const orderItems = cartItems.map(item => ({
+        _id: item.id, 
+        qty: item.quantity,
+        name: item.name,
+        image: item.image,
+        price: item.price 
+      }));
+  
+      // At this point just placeholder
+      const shippingAddress = {
+        address: "1", 
+        city: "1", 
+        postalCode: "1", 
+        country: "1" 
+      };
+  
+      // 3. Create order object
+      const orderData = {
+        orderItems,
+        shippingAddress,
+        paymentMethod: "Stripe", // Get from user selection
+        itemsPrice: Math.round(cartTotal * 100) / 100
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/createOrder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+      
+      const data = await response.json();
+      console.log("Order created:", data._id);
+      navigate("/checkout", { state: { orderId: data._id } });
+    } catch {
+      console.error("Error during checkout");
+      alert("Failed to initiate checkout.");
+    }}
 
   return (
     <>

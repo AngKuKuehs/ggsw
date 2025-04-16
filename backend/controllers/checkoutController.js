@@ -22,13 +22,13 @@ const checkoutCart = asyncHandler(async (req, res) => {
                     product_data: {
                         name: `Order #${order._id}`,
                     },
-                    unit_amount: order.totalPrice * 100,
+                    unit_amount: Math.round((order.totalPrice + 3.5)*100),
                 },
                 quantity: 1,
             },
         ],
         mode: 'payment',
-        success_url: `${process.env.CLIENT_URL}/order-success`,
+        success_url: `${process.env.CLIENT_URL}/order-success?orderId=${order._id}`,
         cancel_url: `${process.env.CLIENT_URL}/checkout`,
     });
 

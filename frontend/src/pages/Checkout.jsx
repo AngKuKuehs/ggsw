@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import CheckoutForm from "../components/CheckoutForm";
 import CartSummary from "../components/CartSummary";
+import { useLocation } from "react-router-dom";
 import.meta.env.VITE_BACKEND_URL;
 
 const CheckoutPage = () => {
+
+  const location = useLocation();
+  const orderId = location.state?.orderId;
 
   const [formData, setFormData] = useState({
     email: "",
@@ -19,8 +23,19 @@ const CheckoutPage = () => {
     postalCode: "",
     phone: ""
   });  
+  const [orderData, setOrderData] = useState(null);
 
-  const cartTotal = 19.96; // Static for now
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/${orderId}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const data = await response.json();
+      setOrderData(data);
+    };
+    fetchOrder();
+  }, [orderId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +51,7 @@ const CheckoutPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          orderId: "67ff5bd163f4fd97a8da97d6",
+          orderId: orderId,
         }),
       });
   
@@ -68,7 +83,7 @@ const CheckoutPage = () => {
           </div>
 
           {/* Right: Summary */}
-          <CartSummary total={cartTotal} onCheckout={handleSubmit} />
+          <CartSummary total={orderData?.totalPrice || 0} items={orderData?.orderItems || []} onCheckout={handleSubmit} />
         </form>
       </main>
       <Footer />
