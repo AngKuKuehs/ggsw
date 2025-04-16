@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
+import { useNavigate } from "react-router-dom";
+
+// const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = "http://localhost:5000";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
+      // Simulated user data – replace with actual fetch later
       const data = {
         name: "Angie Yoedzer", 
         email: "yoedzera@gmail.com",
@@ -16,6 +22,24 @@ const Profile = () => {
 
     fetchUser();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/users/logout`, {
+        method: "POST",
+        credentials: "include", // include cookies
+      });
+
+      if (!res.ok) throw new Error("Logout failed");
+
+      setUser(null);
+      alert("Logged out successfully!");
+      navigate("/login"); // or any other route
+    } catch (err) {
+      console.error("Logout error:", err);
+      alert("Logout failed");
+    }
+  };
 
   const sidebarItems = [
     { label: "Profile", active: true },
@@ -71,7 +95,14 @@ const Profile = () => {
                     You have no new notifications.
                   </div>
                 </div>
-                <button className="text-sm text-red-600 hover:underline mt-1">Log out</button>
+
+                {/* 🔴 Logout button */}
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-red-600 hover:underline mt-1"
+                >
+                  Log out
+                </button>
               </>
             )}
           </section>
