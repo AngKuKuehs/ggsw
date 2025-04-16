@@ -22,6 +22,7 @@ const Register = () => {
       alert("Passwords do not match.");
       return;
     }
+<<<<<<< Updated upstream
 
     console.log("Registration data submitted:", formData);
 
@@ -31,6 +32,45 @@ const Register = () => {
       password: "",
       confirmPassword: "",
     });
+=======
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/users/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // To allow cookies (if your backend sets one)
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+  
+      if (!response.ok) {
+        alert(response.body)
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+  
+      const data = await response.json();
+      console.log("Registration successful:", data);
+      alert("Account created successfully!");
+  
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+  
+      navigate("/");
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(`Error: ${error.message}`);
+    }
+>>>>>>> Stashed changes
   };
 
   return (
