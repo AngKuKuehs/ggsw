@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -22,11 +23,42 @@ import Login from "./pages/User/login";
 import Profile from "./pages/User/Profile";
 import Register from "./pages/User/Registration";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 function App() {
-  // Simulated auth (replace with actual auth context later)
-  const user = JSON.parse(localStorage.getItem("user")); 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/users/profile`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          console.error("Failed to fetch user profile.");
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "admin";
+
+  if (loading) {
+    return <div className="text-center p-10">Loading...</div>; // Optional: spinner here
+  }
 
   return (
     <Routes>
