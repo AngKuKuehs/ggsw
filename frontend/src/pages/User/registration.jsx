@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 
@@ -55,9 +55,7 @@ const Register = () => {
         confirmPassword: "",
       });
   
-      // Optionally redirect to login
-      // navigate("/login");
-  
+    <Navigate to="/login" replace={true} />;
     } catch (error) {
       console.error("Registration error:", error);
       alert(`Error: ${error.message}`);
