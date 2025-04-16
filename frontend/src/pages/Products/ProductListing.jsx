@@ -8,20 +8,9 @@ import {
   Breadcrumbs,
 } from "../../components/ProductComponents";
 import { FiFilter, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
+import { useSearchParams } from "react-router";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-const ALL_CATEGORIES = [
-  "Vegetables",
-  "Fruits",
-  "Dairy",
-  "Beverages",
-  "Snacks",
-  "Bakery",
-  "Frozen",
-  "Meat",
-  "Seafood",
-];
 
 const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
@@ -30,11 +19,49 @@ const ProductListingPage = () => {
   const [sort, setSort] = useState("");
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
   const [maxPrice, setMaxPrice] = useState(100);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/category/categories`, {
+          method: "GET",
+          credentials: "include"
+        });
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+
+  const categoryNameToId = categories.reduce((acc, cat) => {
+    acc[cat.name.toLowerCase()] = cat._id;
+    return acc;
+  }, {});
+
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const categoryName = searchParams.get("category");
+    if (categoryName && categories.length > 0) {
+      const cat = categories.find(
+        c => c.name.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (cat) {
+        setSelectedCategories([cat._id]);
+      }
+  }}, [searchParams, categories]);
 
 useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/product`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
+          credentials: "include"
+        });
         const data = await res.json();
         if (data?.products) {
           setProducts(data.products);
@@ -60,6 +87,12 @@ useEffect(() => {
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 12);
   };
+
+  const filteredProducts = products.filter(product =>
+    selectedCategories.length === 0 || selectedCategories.includes(product.category)
+  );
+
+  console.log(selectedCategories);
 
   return (
     <>
@@ -94,10 +127,18 @@ useEffect(() => {
                   <div>
                     <p className="font-medium mb-2">Category</p>
                     <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
-                      {ALL_CATEGORIES.map((cat) => (
-                        <label key={cat} className="text-sm">
-                          <input type="checkbox" className="mr-2" />
-                          {cat}
+                      {categories.map((cat) => (
+                        <label key={cat._id} className="text-sm">
+                          <input type="checkbox" className="mr-2" checked={selectedCategories.includes(cat._id)}
+                                  onChange={e => {
+                                    if (e.target.checked) {
+                                      setSelectedCategories([...selectedCategories, cat._id]);
+                                    } else {
+                                      setSelectedCategories(selectedCategories.filter(c => c !== cat._id));
+                                    }
+                                  }}
+                          />
+                          {cat.name}
                         </label>
                       ))}
                     </div>
@@ -153,7 +194,7 @@ useEffect(() => {
               />
 
               <ProductGrid
-                products={products.slice(0, visibleCount)}
+                products={filteredProducts.slice(0, visibleCount)}
                 ProductCardComponent={ProductCard}
               />
 
