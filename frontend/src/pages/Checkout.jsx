@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import CheckoutForm from "../components/CheckoutForm";
 import CartSummary from "../components/CartSummary";
-import.meta.env.VITE_BACKEND_URL;
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
@@ -18,40 +18,34 @@ const CheckoutPage = () => {
     state: "",
     postalCode: "",
     phone: ""
-  });  
+  });
 
-  const cartTotal = 19.96; 
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("cartItems");
+    if (stored) {
+      setCartItems(JSON.parse(stored));
+    }
+  }, []);
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId: "67ff5bd163f4fd97a8da97d6",
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        console.error("Error:", data);
-        alert("Failed to initiate checkout.");
-      }
-    } catch (error) {
-      alert ("An error occurred while processing your request.");
-      console.error("Error:", error);
-    }
+    console.log("Submitting Order:", formData);
+    console.log("Cart:", cartItems);
+
+    // Later: send to backend
+    navigate("/order-success");
   };
 
   return (
