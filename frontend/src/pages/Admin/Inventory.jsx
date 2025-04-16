@@ -13,7 +13,7 @@ const InventoryPage = () => {
   ];
 
   const handleUpdateClick = () => {
-    alert("🛠️ Inventory update triggered. Connect to backend API here.");
+    navigate("/admin/update-inventory"); 
   };
 
   return (
