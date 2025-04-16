@@ -9,6 +9,8 @@ import {
 } from "../../components/ProductComponents";
 import { FiFilter, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const ALL_CATEGORIES = [
   "Vegetables",
   "Fruits",
@@ -32,7 +34,7 @@ const ProductListingPage = () => {
 useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/product");
+        const res = await fetch(`${backendUrl}/api/product`);
         const data = await res.json();
         if (data?.products) {
           setProducts(data.products);

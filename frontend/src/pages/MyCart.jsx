@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import CartItemCard from "../components/CartItemCard";
@@ -7,24 +7,33 @@ import { useNavigate } from "react-router-dom";
 
 const MyCart = () => {
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
 
-  // Dummy cart items (replace this with real cart state later)
-  const cartItems = [
-    {
-      id: 1,
-      name: "Meiji Milk (2L)",
-      price: 2.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/300",
-    },
-    {
-      id: 2,
-      name: "Cadbury Chocolate",
-      price: 1.49,
-      quantity: 2,
-      image: "https://via.placeholder.com/300",
-    },
-  ];
+  // Load cart from localStorage on first render
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItems(stored);
+  }, []);
+
+  // Sync to localStorage whenever cartItems changes
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const handleQuantityChange = (id, newQuantity) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id
+          ? { ...item, quantity: Math.max(newQuantity, 1) }
+          : item
+      )
+    );
+  };
+
+  const handleRemove = (id) => {
+    const updated = cartItems.filter((item) => item.id !== id);
+    setCartItems(updated);
+  };
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -32,7 +41,6 @@ const MyCart = () => {
   );
 
   const handleCheckout = () => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
     navigate("/checkout");
   };
 
@@ -44,9 +52,18 @@ const MyCart = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Cart Items */}
           <div className="md:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <CartItemCard key={item.id} item={item} />
-            ))}
+            {cartItems.length === 0 ? (
+              <p className="text-gray-500 text-sm">Your cart is empty.</p>
+            ) : (
+              cartItems.map((item) => (
+                <CartItemCard
+                  key={item.id}
+                  item={item}
+                  onQuantityChange={handleQuantityChange}
+                  onRemove={handleRemove}
+                />
+              ))
+            )}
           </div>
 
           {/* Order Summary */}
