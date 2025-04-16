@@ -33,6 +33,7 @@ const MyCart = () => {
   useEffect(() => {
     if (!initialLoad.current) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      window.dispatchEvent(new Event("cartUpdated"));
     }
     initialLoad.current = false;
   }, [cartItems]);
