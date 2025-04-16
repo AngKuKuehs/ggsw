@@ -10,48 +10,39 @@ const HomePage = () => {
   const [flashDeals, setFlashDeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    // Dummy flash deal products
-    setFlashDeals([
-      {
-        id: 1,
-        name: "Meiji Milk (2L)",
-        price: 2.99,
-        rating: 4,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 2,
-        name: "Cadbury Chocolate",
-        price: 1.49,
-        rating: 5,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 3,
-        name: "Sunshine Toast",
-        price: 2.19,
-        rating: 4,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 4,
-        name: "Coke Mini Cans",
-        price: 5.99,
-        rating: 5,
-        image: "https://via.placeholder.com/300",
-      },
-    ]);
+   useEffect(() => {
+      const fetchCategories = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/categories`, {
+            method: "GET",
+            credentials: "include"
+          });
+          const data = await response.json();
+          setCategories(data);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+      };
+  
+      fetchCategories();
+    }, []);
 
-    // Dummy categories
-    setCategories([
-      { id: 1, name: "Vegetables", slug: "vegetables", image: "https://via.placeholder.com/200", count: 120 },
-      { id: 2, name: "Meat", slug: "meat", image: "https://via.placeholder.com/200", count: 98 },
-      { id: 3, name: "Pantry", slug: "pantry", image: "https://via.placeholder.com/200", count: 40 },
-      { id: 4, name: "Fresh Fruit", slug: "fruit", image: "https://via.placeholder.com/200", count: 77 },
-      { id: 5, name: "Bakes", slug: "bakes", image: "https://via.placeholder.com/200", count: 34 },
-    ]);
-  }, []);
+    useEffect(() => {
+      const fetchFlashDeals = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/top`, {
+            method: "GET",
+            credentials: "include"
+          });
+          const data = await response.json();
+          setFlashDeals(data);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+      };
+  
+      fetchFlashDeals();
+    }, []);
 
   return (
     <>
@@ -67,7 +58,7 @@ const HomePage = () => {
             <h2 className="text-xl font-bold text-gray-800">Flash Deals</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {flashDeals.map((product) => (
+            {flashDeals.slice(0,4).map((product) => (
               <Link to="/products" key={product.id} className="block">
                 <ProductCard
                   id={product.id}
