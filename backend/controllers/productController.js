@@ -3,7 +3,7 @@ import Product from "../models/productModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
     try {
-        const {name, description, price, category, quantity, brand} = req.fields;
+        const {name, description, price, category, quantity, brand, image} = req.fields;
 
         switch (true) {
             case !name:
@@ -34,7 +34,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     try {
-        const {name, description, price, category, quantity, brand} = req.fields;
+        const {name, description, price, category, quantity, brand, image} = req.fields;
 
         switch (true) {
             case !name:

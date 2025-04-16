@@ -24,18 +24,15 @@ const INITIAL_FORM_STATE = {
   category: "",
   quantity: "",
   brand: "",
-  image: null,
+  image: "",
 };
 
 const UpdateInventoryPage = () => {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "image" ? files[0] : value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = () => {
@@ -66,8 +63,9 @@ const UpdateInventoryPage = () => {
         data.append(key, value);
       }
     });
-
+  
     try {
+      console.log(data)
       const response = await fetch(`${BackendURL}/api/product`, {
         method: "POST",
         body: data,
