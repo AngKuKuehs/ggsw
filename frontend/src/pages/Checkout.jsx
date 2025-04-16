@@ -3,10 +3,9 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import CheckoutForm from "../components/CheckoutForm";
 import CartSummary from "../components/CartSummary";
-import { useNavigate } from "react-router-dom"; // ✅ Import this
+import.meta.env.VITE_BACKEND_URL;
 
 const CheckoutPage = () => {
-  const navigate = useNavigate(); // ✅ Hook for navigation
 
   const [formData, setFormData] = useState({
     email: "",
@@ -28,10 +27,31 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting Order:", formData);
-    navigate("/order-success"); // 
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: "67ff5bd163f4fd97a8da97d6",
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Error:", data);
+        alert("Failed to initiate checkout.");
+      }
+    } catch (error) {
+      alert ("An error occurred while processing your request.");
+      console.error("Error:", error);
+    }
   };
 
   return (
