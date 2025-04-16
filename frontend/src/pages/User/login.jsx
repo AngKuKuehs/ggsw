@@ -6,7 +6,7 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 
 // const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const backendUrl = "import.meta.env.VITE_BACKEND_URL";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
   const [formData, setFormData] = useState({
