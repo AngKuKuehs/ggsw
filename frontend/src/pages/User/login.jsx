@@ -34,16 +34,18 @@ const Login = () => {
     
       const data = await response.json();
       const isAdmin = data.isAdmin
+      console.log("Login Page")
       console.log("Login successful:", data);
       console.log("isAdmin:", isAdmin)
   
       // Optionally redirect or update global auth state
-      if (isAdmin) {
-        console.log("HERE")
-        navigate("/admin/dashboard")
-      } else {
-        navigate("/")
-      }
+      setTimeout(() => {
+        if (isAdmin) {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+      }, 200);
       
       setFormData({ email: "", password: "" });
     } catch (error) {
