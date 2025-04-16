@@ -28,12 +28,12 @@ const INITIAL_FORM_STATE = {
 };
 
 const UpdateInventoryPage = () => {
-
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const validateForm = () => {
     const requiredFields = ["name", "description", "price", "category", "quantity", "brand", "image"];
