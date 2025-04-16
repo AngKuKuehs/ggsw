@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // Add useLocation
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import ProductCard from "../../components/ProductCard";
@@ -8,73 +9,73 @@ import {
   Breadcrumbs,
 } from "../../components/ProductComponents";
 import { FiFilter, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
-import { useSearchParams } from "react-router";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const ALL_CATEGORIES = [
+  "Vegetables",
+  "Fruits",
+  "Dairy",
+  "Beverages",
+  "Snacks",
+  "Bakery",
+  "Frozen",
+  "Meat",
+  "Seafood",
+];
 
 const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]); // New state for filtered products
   const [visibleCount, setVisibleCount] = useState(12);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sort, setSort] = useState("");
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
   const [maxPrice, setMaxPrice] = useState(100);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  
+
+  const location = useLocation(); // Get URL query params
+
+  // Extract search query from URL
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(`${backendUrl}/api/category/categories`, {
-          method: "GET",
-          credentials: "include"
-        });
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-  
-    fetchCategories();
-  }, []);
-
-  const categoryNameToId = categories.reduce((acc, cat) => {
-    acc[cat.name.toLowerCase()] = cat._id;
-    return acc;
-  }, {});
-
-  const [searchParams] = useSearchParams();
-  useEffect(() => {
-    const categoryName = searchParams.get("category");
-    if (categoryName && categories.length > 0) {
-      const cat = categories.find(
-        c => c.name.toLowerCase() === categoryName.toLowerCase()
-      );
-      if (cat) {
-        setSelectedCategories([cat._id]);
-      }
-  }}, [searchParams, categories]);
-
-useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
-          credentials: "include"
-        });
+        const res = await fetch("http://localhost:5000/api/product");
         const data = await res.json();
-        if (data?.products) {
-          setProducts(data.products);
-        } else {
-          setProducts(data); 
+        let fetchedProducts = data?.products || data;
+
+        // If backend doesn't handle search, filter client-side
+        if (searchQuery && !url.includes("search")) {
+          fetchedProducts = fetchedProducts.filter((product) =>
+            product.name?.toLowerCase().includes(searchQuery) ||
+            product.description?.toLowerCase().includes(searchQuery)
+          );
         }
+
+        setProducts(fetchedProducts);
+        setFilteredProducts(fetchedProducts); // Initialize filtered products
       } catch (err) {
         console.error("Error fetching products:", err);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [searchQuery]); // Re-fetch or filter when searchQuery changes
+
+  // Handle sorting (apply to filteredProducts)
+  useEffect(() => {
+    let sortedProducts = [...filteredProducts];
+    if (sort === "low-high") {
+      sortedProducts.sort((a, b) => a.price - b.price);
+    } else if (sort === "high-low") {
+      sortedProducts.sort((a, b) => b.price - a.price);
+    } else if (sort === "rating") {
+      sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sort === "latest") {
+      sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    setFilteredProducts(sortedProducts);
+  }, [sort, products]); // Re-sort when sort or products change
 
   const handleSortChange = (value) => {
     setSort(value);
@@ -87,12 +88,6 @@ useEffect(() => {
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + 12);
   };
-
-  const filteredProducts = products.filter(product =>
-    selectedCategories.length === 0 || selectedCategories.includes(product.category)
-  );
-
-  console.log(selectedCategories);
 
   return (
     <>
@@ -127,18 +122,10 @@ useEffect(() => {
                   <div>
                     <p className="font-medium mb-2">Category</p>
                     <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
-                      {categories.map((cat) => (
-                        <label key={cat._id} className="text-sm">
-                          <input type="checkbox" className="mr-2" checked={selectedCategories.includes(cat._id)}
-                                  onChange={e => {
-                                    if (e.target.checked) {
-                                      setSelectedCategories([...selectedCategories, cat._id]);
-                                    } else {
-                                      setSelectedCategories(selectedCategories.filter(c => c !== cat._id));
-                                    }
-                                  }}
-                          />
-                          {cat.name}
+                      {ALL_CATEGORIES.map((cat) => (
+                        <label key={cat} className="text-sm">
+                          <input type="checkbox" className="mr-2" />
+                          {cat}
                         </label>
                       ))}
                     </div>
@@ -193,21 +180,31 @@ useEffect(() => {
                 ]}
               />
 
-              <ProductGrid
-                products={filteredProducts.slice(0, visibleCount)}
-                ProductCardComponent={ProductCard}
-              />
-
-              {/* Show More */}
-              {visibleCount < products.length && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={handleShowMore}
-                    className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition"
-                  >
-                    Show More Products
-                  </button>
+              {filteredProducts.length === 0 && searchQuery ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-600 text-lg">
+                    No matches found for "{searchQuery}".
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <ProductGrid
+                    products={filteredProducts.slice(0, visibleCount)}
+                    ProductCardComponent={ProductCard}
+                  />
+
+                  {/* Show More */}
+                  {visibleCount < filteredProducts.length && (
+                    <div className="flex justify-center mt-8">
+                      <button
+                        onClick={handleShowMore}
+                        className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition"
+                      >
+                        Show More Products
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

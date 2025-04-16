@@ -84,10 +84,7 @@ const ProductDetailsPage = () => {
 
                 <AddToCartButton
                   onClick={() => {
-                    if (!product || !product._id) return;
-
                     const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
-
                     const exists = stored.find((item) => item.id === product._id);
                     let updatedCart;
 
@@ -111,8 +108,8 @@ const ProductDetailsPage = () => {
                     }
 
                     localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-                    window.dispatchEvent(new Event("cartUpdated"));
                     alert(`${product.name} added to cart!`);
+                    window.dispatchEvent(new Event("cartUpdated"));
                   }}
                 />
               </div>
@@ -205,3 +202,5 @@ const ProductDetailsPage = () => {
 };
 
 export default ProductDetailsPage;
+
+
