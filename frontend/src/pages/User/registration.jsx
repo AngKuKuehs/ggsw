@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/header";
@@ -5,7 +6,7 @@ import Footer from "../../components/footer";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -15,24 +16,13 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-<<<<<<< Updated upstream
-
-    console.log("Registration data submitted:", formData);
-
-    setFormData({
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-=======
   
     try {
       const response = await fetch("http://localhost:5000/api/users/createUser", {
@@ -65,12 +55,13 @@ const Register = () => {
         confirmPassword: "",
       });
   
-      navigate("/");
+      // Optionally redirect to login
+      // navigate("/login");
+  
     } catch (error) {
       console.error("Registration error:", error);
       alert(`Error: ${error.message}`);
     }
->>>>>>> Stashed changes
   };
 
   return (
@@ -85,9 +76,9 @@ const Register = () => {
             <div>
               <input
                 type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
+                name="username"
+                placeholder="Username"
+                value={formData.username}
                 onChange={handleChange}
                 required
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"

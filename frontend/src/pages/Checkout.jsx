@@ -3,10 +3,10 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import CheckoutForm from "../components/CheckoutForm";
 import CartSummary from "../components/CartSummary";
-import { useNavigate } from "react-router-dom"; // ✅ Import this
+import { useNavigate } from "react-router-dom"; // 
 
 const CheckoutPage = () => {
-  const navigate = useNavigate(); // ✅ Hook for navigation
+  const navigate = useNavigate(); // 
 
   const [formData, setFormData] = useState({
     email: "",
@@ -21,7 +21,7 @@ const CheckoutPage = () => {
     phone: ""
   });  
 
-  const cartTotal = 19.96; // Static for now
+  const cartTotal = 19.96; 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
