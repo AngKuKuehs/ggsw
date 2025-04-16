@@ -38,8 +38,6 @@ const CategoriesPage = () => {
     );
   }
 
-  console.log("Categories:", categories);
-
   return (
     <>
       <Header />

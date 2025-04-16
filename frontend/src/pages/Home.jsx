@@ -11,6 +11,7 @@ const HomePage = () => {
   const [flashDeals, setFlashDeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
