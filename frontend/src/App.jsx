@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages
 import MyCartPage from "./pages/MyCart";
@@ -22,6 +23,11 @@ import Profile from "./pages/User/Profile";
 import Register from "./pages/User/Registration";
 
 function App() {
+  // Simulated auth (replace with actual auth context later)
+  const user = JSON.parse(localStorage.getItem("user")); 
+  const isAuthenticated = !!user;
+  const isAdmin = user?.role === "admin";
+ç
   return (
     <Routes>
       {/* Main User Pages */}
@@ -29,7 +35,7 @@ function App() {
       <Route path="/cart" element={<MyCartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success" element={<OrderSuccessPage />} />
-      <Route path="/categories" element={<CategoriesPage />} /> 
+      <Route path="/categories" element={<CategoriesPage />} />
 
       {/* Product Pages */}
       <Route path="/products" element={<ProductListingPage />} />
@@ -40,12 +46,34 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
 
-      {/* Admin */}
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/inventory" element={<InventoryPage />} />
-      <Route path="/admin/inventory/update" element={<UpdateInventoryPage />} />
+      {/* Admin Protected Routes */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+            <InventoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/inventory/update"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+            <UpdateInventoryPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
 
 export default App;
+
