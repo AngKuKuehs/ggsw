@@ -5,6 +5,7 @@ import MyCartPage from "./pages/MyCart";
 import CheckoutPage from "./pages/Checkout";
 import OrderSuccessPage from "./pages/OrderPlaced";
 import HomePage from "./pages/Home";
+import CategoriesPage from "./pages/Categories";
 
 // Admin Pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -28,6 +29,7 @@ function App() {
       <Route path="/cart" element={<MyCartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success" element={<OrderSuccessPage />} />
+      <Route path="/categories" element={<CategoriesPage />} /> 
 
       {/* Product Pages */}
       <Route path="/products" element={<ProductListingPage />} />

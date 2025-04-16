@@ -1,4 +1,3 @@
-// src/components/CheckoutForm.jsx
 import React from "react";
 
 const CheckoutForm = ({ formData, onChange }) => {
@@ -6,17 +5,6 @@ const CheckoutForm = ({ formData, onChange }) => {
     <div className="bg-white p-8 rounded-lg shadow-sm border">
       {/* Breadcrumbs */}
       <p className="text-sm text-gray-500 mb-6">Information &gt; Shipping &gt; Payment</p>
-
-      {/* Express Checkout */}
-      <div className="mb-6 space-y-4">
-        <h3 className="text-sm font-semibold text-gray-700">Express checkout</h3>
-        <div className="flex gap-4">
-          <button className="bg-purple-600 text-white px-4 py-2 rounded text-sm w-full">ShopPay</button>
-          <button className="bg-yellow-400 text-black px-4 py-2 rounded text-sm w-full">Amazon Pay</button>
-          <button className="bg-yellow-300 text-blue-800 px-4 py-2 rounded text-sm w-full">PayPal</button>
-        </div>
-        <div className="border-t pt-2 text-center text-xs text-gray-400">or continue below to pay with a credit card</div>
-      </div>
 
       {/* Contact Info */}
       <div className="mb-6 space-y-2">
@@ -127,14 +115,6 @@ const CheckoutForm = ({ formData, onChange }) => {
           onChange={onChange}
         />
       </div>
-
-      {/* CTA */}
-      <button
-        type="submit"
-        className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md font-semibold"
-      >
-        Continue to Shipping
-      </button>
     </div>
   );
 };
