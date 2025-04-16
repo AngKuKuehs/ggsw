@@ -25,6 +25,8 @@ const OrderSuccessPage = () => {
     .then(data => console.log("Payment successful:", data))
     .catch(err => console.error("Payment error:", err));
   }, [orderId])
+
+  localStorage.clear();
   return (
     <>
       <Header />
