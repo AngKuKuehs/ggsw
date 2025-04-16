@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 
-// const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -30,15 +30,19 @@ const Login = () => {
         credentials: "include", // VERY IMPORTANT for cookies
         body: JSON.stringify(formData),
       });
-      alert(`${backendUrl}/api/users/login`);
       if (!response.ok) throw new Error("Login failed");
-  
+    
       const data = await response.json();
+      const isAdmin = data.isAdmin
       console.log("Login successful:", data);
   
       // Optionally redirect or update global auth state
-      alert("Logged in successfully!");
-  
+      if (isAdmin) {
+        navigate("/admin/dashboard")
+      } else {
+        navigate("/")
+      }
+      
       setFormData({ email: "", password: "" });
     } catch (error) {
       console.error("Login error:", error);
