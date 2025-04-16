@@ -3,78 +3,82 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import AdminLayout from "../../components/AdminLayout";
 
-const BackendURL = "http://localhost:5000";
+const BackendURL = import.meta.env.VITE_BACKEND_URL;
+
+const CATEGORY_OPTIONS = [
+  { label: "Fruits", value: "fruits", id: "fruits_id" },
+  { label: "Vegetables", value: "vegetables", id: "67ff699c53c719ffd4a01078" },
+  { label: "Dairy", value: "dairy", id: "dairy_id" },
+  { label: "Bakery", value: "bakery", id: "bakery_id" },
+  { label: "Meat", value: "meat", id: "meat_id" },
+  { label: "Beverages", value: "beverages", id: "beverages_id" },
+];
+
+const getCategoryId = (value) =>
+  CATEGORY_OPTIONS.find((cat) => cat.value === value)?.id || "";
+
+const INITIAL_FORM_STATE = {
+  name: "",
+  description: "",
+  price: "",
+  category: "",
+  quantity: "",
+  brand: "",
+  image: null,
+};
 
 const UpdateInventoryPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    quantity: "",
-    brand: "",
-    image: null,
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "image") {
-      setFormData((prev) => ({ ...prev, image: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "image" ? files[0] : value,
+    }));
   };
+
+  const validateForm = () => {
+    const requiredFields = ["name", "description", "price", "category", "quantity", "brand", "image"];
+    for (let field of requiredFields) {
+      if (!formData[field]) {
+        return `The ${field} field is required.`;
+      }
+    }
+    return null;
+  };
+
+  const resetForm = () => setFormData(INITIAL_FORM_STATE);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    switch (true) {
-      case !formData.name:
-        return alert("Name field is empty");
-      case !formData.description:
-        return alert("Description field is empty");
-      case !formData.price:
-        return alert("Price field is empty");
-      case !formData.category:
-        return alert("Category field is empty");
-      case !formData.quantity:
-        return alert("Quantity field is empty");
-      case !formData.brand:
-        return alert("Brand field is empty");
-      case !formData.image:
-        return alert("Image not selected");
+    const validationError = validateForm();
+    if (validationError) {
+      return alert(validationError);
     }
 
-    try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("description", formData.description);
-      data.append("price", formData.price);
-      data.append("category", formData.category);
-      data.append("quantity", formData.quantity);
-      data.append("brand", formData.brand);
-      data.append("image", formData.image);
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "category") {
+        data.append("category", getCategoryId(value));
+      } else {
+        data.append(key, value);
+      }
+    });
 
+    try {
       const response = await fetch(`${BackendURL}/api/product`, {
         method: "POST",
         body: data,
-        credentials: "include", // Include cookies
+        credentials: "include",
       });
 
       const result = await response.json();
 
-      if (result.success) {
+      if (response.ok) {
         alert("Product added successfully!");
-        setFormData({
-          name: "",
-          description: "",
-          price: "",
-          category: "",
-          quantity: "",
-          brand: "",
-          image: null,
-        });
+        resetForm();
       } else {
         alert(`Error: ${result.error || "Something went wrong"}`);
       }
@@ -128,12 +132,11 @@ const UpdateInventoryPage = () => {
               required
             >
               <option value="">-- Select Category --</option>
-              <option value="fruits">Fruits</option>
-              <option value="vegetables">Vegetables</option>
-              <option value="dairy">Dairy</option>
-              <option value="bakery">Bakery</option>
-              <option value="meat">Meat</option>
-              <option value="beverages">Beverages</option>
+              {CATEGORY_OPTIONS.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
             </select>
 
             <input
@@ -180,7 +183,3 @@ const UpdateInventoryPage = () => {
 };
 
 export default UpdateInventoryPage;
-
-
-
-
