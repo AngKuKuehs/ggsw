@@ -157,7 +157,7 @@ const UpdateInventoryPage = () => {
             />
 
             <input
-              type="file"
+              type="url"
               name="image"
               accept="image/*"
               onChange={handleChange}
