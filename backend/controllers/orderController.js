@@ -16,7 +16,7 @@ const calcPrices = (orderItems) => {
   const shippingPrice = itemsPrice > 100 ? 0 : 10;
   const taxRate = 0.15;
   const taxPrice = +(itemsPrice * taxRate).toFixed(2);
-  const totalPrice = +(itemsPrice + shippingPrice + taxPrice).toFixed(2);
+  const totalPrice = +(itemsPrice).toFixed(2);
 
   return {
     itemsPrice: itemsPrice.toFixed(2),
@@ -31,6 +31,8 @@ const calcPrices = (orderItems) => {
 const createOrder = async (req, res) => {
   try {
     const { orderItems, shippingAddress, paymentMethod } = req.body;
+
+    await Order.deleteMany({ user: req.user._id, isPaid: false });
 
     if (!orderItems?.length) {
       return handleError(res, new Error("No order items"), 400);

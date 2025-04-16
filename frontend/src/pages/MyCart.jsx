@@ -4,26 +4,38 @@ import Footer from "../components/footer";
 import CartItemCard from "../components/CartItemCard";
 import CartSummary from "../components/CartSummary";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 const MyCart = () => {
   const navigate = useNavigate();
 
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Meiji Milk (2L)",
-      price: 2.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/300",
-    },
-    {
-      id: 2,
-      name: "Cadbury Chocolate",
-      price: 1.49,
-      quantity: 2,
-      image: "https://via.placeholder.com/300",
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const initialLoad = useRef(true); // Track initial load
+
+  // Load cart items (runs once on mount)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cartItems");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        
+        // Validate data format
+        if (Array.isArray(parsed)) {
+          setCartItems(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load cart:", error);
+    }
+  }, []);
+
+  // Sync to localStorage (skips initial load)
+  useEffect(() => {
+    if (!initialLoad.current) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+    initialLoad.current = false;
+  }, [cartItems]);
 
   const handleQuantityChange = (id, quantity) => {
     if (quantity < 1) return; // Prevent 0 or negative quantities
@@ -43,9 +55,53 @@ const MyCart = () => {
     0
   );
 
-  const handleCheckout = () => {
-    navigate("/checkout");
-  };
+  const handleCheckout = async () => {
+    try {
+
+      const orderItems = cartItems.map(item => ({
+        _id: item.id, 
+        qty: item.quantity,
+        name: item.name,
+        image: item.image,
+        price: item.price 
+      }));
+  
+      // At this point just placeholder
+      const shippingAddress = {
+        address: "1", 
+        city: "1", 
+        postalCode: "1", 
+        country: "1" 
+      };
+  
+      // 3. Create order object
+      const orderData = {
+        orderItems,
+        shippingAddress,
+        paymentMethod: "Stripe", // Get from user selection
+        itemsPrice: Math.round(cartTotal * 100) / 100
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/createOrder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+      
+      const data = await response.json();
+      console.log("Order created:", data._id);
+      navigate("/checkout", { state: { orderId: data._id } });
+    } catch {
+      console.error("Error during checkout");
+      alert("Failed to initiate checkout.");
+    }}
 
   return (
     <>
