@@ -1,7 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import Header from "../../components/header";
 import Footer from "../../components/footer";
+
+// const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = "http://localhost:5000"
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -13,12 +19,32 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Login form submitted:", formData);
-
-    setFormData({ email: "", password: "" });
+  
+    try {
+      const response = await fetch(`${backendUrl}/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // VERY IMPORTANT for cookies
+        body: JSON.stringify(formData),
+      });
+      alert(`${backendUrl}/api/users/login`);
+      if (!response.ok) throw new Error("Login failed");
+  
+      const data = await response.json();
+      console.log("Login successful:", data);
+  
+      // Optionally redirect or update global auth state
+      alert("Logged in successfully!");
+  
+      setFormData({ email: "", password: "" });
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error);
+    }
   };
 
   return (
