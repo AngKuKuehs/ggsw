@@ -8,6 +8,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { FiShoppingBag, FiChevronDown } from "react-icons/fi";
+import { useEffect } from "react";
 
 const Header = () => {
   const [langOpen, setLangOpen] = useState(false);
@@ -16,6 +17,40 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const shopTimeout = useRef(null);
   const navigate = useNavigate();
+
+  const [cartQty, setCartQty] = useState(0);
+
+  useEffect(() => {
+    const updateQty = () => {
+      const stored = localStorage.getItem("cartItems");
+      if (stored) {
+        try {
+          const cartItems = JSON.parse(stored);
+          if (Array.isArray(cartItems)) {
+            const totalQty = cartItems.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
+            setCartQty(totalQty);
+          }
+        } catch (error) {
+          setCartQty(0);
+          console.error(error);
+        }
+      } else {
+        setCartQty(0);
+      }
+    };
+  
+    // Listen for both custom and storage events
+    window.addEventListener("cartUpdated", updateQty);
+    window.addEventListener("storage", updateQty);
+  
+    // Run once on mount
+    updateQty();
+  
+    return () => {
+      window.removeEventListener("cartUpdated", updateQty);
+      window.removeEventListener("storage", updateQty);
+    };
+  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
@@ -109,7 +144,7 @@ const Header = () => {
           <Link to="/cart" className="relative cursor-pointer">
             <FiShoppingBag />
             <span className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-              2
+            {cartQty}
             </span>
           </Link>
           <Link to="/profile">
