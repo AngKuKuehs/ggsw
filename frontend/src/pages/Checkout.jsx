@@ -3,8 +3,11 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import CheckoutForm from "../components/CheckoutForm";
 import CartSummary from "../components/CartSummary";
+import { useNavigate } from "react-router-dom"; // ✅ Import this
 
 const CheckoutPage = () => {
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
@@ -28,7 +31,7 @@ const CheckoutPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting Order:", formData);
-    alert("✅ Order placed successfully!");
+    navigate("/order-success"); // ✅ Navigate to order success page
   };
 
   return (

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Pages
 import MyCartPage from "./pages/MyCart";
@@ -22,29 +22,27 @@ import Register from "./pages/User/Registration";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Main User Pages */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/cart" element={<MyCartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/order-success" element={<OrderSuccessPage />} />
+    <Routes>
+      {/* Main User Pages */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/cart" element={<MyCartPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/order-success" element={<OrderSuccessPage />} />
 
-        {/* Product Pages */}
-        <Route path="/products" element={<ProductListingPage />} />
-        <Route path="/products/:id" element={<ProductDetailsPage />} />
+      {/* Product Pages */}
+      <Route path="/products" element={<ProductListingPage />} />
+      <Route path="/products/:id" element={<ProductDetailsPage />} />
 
-        {/* Auth */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
+      {/* Auth */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
 
-        {/* Admin */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/inventory" element={<InventoryPage />} />
-        <Route path="/admin/inventory/update" element={<UpdateInventoryPage />} />
-      </Routes>
-    </Router>
+      {/* Admin */}
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/inventory" element={<InventoryPage />} />
+      <Route path="/admin/inventory/update" element={<UpdateInventoryPage />} />
+    </Routes>
   );
 }
 

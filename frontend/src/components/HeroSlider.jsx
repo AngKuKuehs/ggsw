@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // ✅ Add this import
 
 const slides = [
   {
@@ -28,25 +29,25 @@ const HeroSlider = () => {
   }, []);
 
   return (
-    <div className="w-full h-[400px] bg-gray-100 relative overflow-hidden rounded-xl mb-10">
-      {slides.map((slide, index) => (
+      <div className="w-full h-[400px] bg-green-600 relative overflow-hidden rounded-xl mb-10">
+        {slides.map((slide, index) => (
         <div
           key={slide.id}
           className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
             index === activeIndex ? "opacity-100" : "opacity-0"
           }`}
         >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center text-white text-center px-4">
+          <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center px-4">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">{slide.title}</h1>
             <p className="text-lg mb-4">{slide.subtitle}</p>
-            <button className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-full text-white text-sm font-medium transition">
+
+            <Link
+              to="/products"
+              className="bg-yellow-400 hover:bg-yellow-500 px-6 py-2 rounded-full text-white text-sm font-medium transition"
+            >
               {slide.cta}
-            </button>
+            </Link>
+
           </div>
         </div>
       ))}
@@ -67,3 +68,4 @@ const HeroSlider = () => {
 };
 
 export default HeroSlider;
+

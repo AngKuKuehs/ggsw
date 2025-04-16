@@ -1,74 +1,55 @@
-// src/pages/MyCart.jsx
-import React, { useState } from "react";
+import React from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import CartItemCard from "../components/CartItemCard";
 import CartSummary from "../components/CartSummary";
+import { useNavigate } from "react-router-dom";
 
-const MyCartPage = () => {
-  const [cartItems, setCartItems] = useState([
+const MyCart = () => {
+  const navigate = useNavigate();
+
+  // Dummy cart items
+  const cartItems = [
     {
       id: 1,
       name: "Meiji Milk (2L)",
       price: 2.99,
-      quantity: 2,
-      image: "https://via.placeholder.com/150",
+      quantity: 1,
+      image: "https://via.placeholder.com/300",
     },
     {
       id: 2,
       name: "Cadbury Chocolate",
       price: 1.49,
-      quantity: 3,
-      image: "https://via.placeholder.com/150",
+      quantity: 2,
+      image: "https://via.placeholder.com/300",
     },
-  ]);
+  ];
 
-  const handleQuantityChange = (id, quantity) => {
-    if (quantity < 1) return;
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
-
-  const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
     0
   );
 
   const handleCheckout = () => {
-    alert("Proceeding to checkout...");
+    navigate("/checkout");
   };
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 px-6 py-10">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+      <main className="bg-gray-50 min-h-screen px-6 py-10 max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">My Cart</h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Cart Items */}
-          <div className="md:col-span-2 bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">My Cart</h2>
-            {cartItems.length > 0 ? (
-              cartItems.map((item) => (
-                <CartItemCard
-                  key={item.id}
-                  item={item}
-                  onQuantityChange={handleQuantityChange}
-                  onRemove={handleRemoveItem}
-                />
-              ))
-            ) : (
-              <p className="text-gray-500">Your cart is empty.</p>
-            )}
+          <div className="md:col-span-2 space-y-4">
+            {cartItems.map((item) => (
+              <CartItemCard key={item.id} item={item} />
+            ))}
           </div>
 
-          {/* Summary */}
-          <CartSummary total={totalPrice} onCheckout={handleCheckout} />
+          {/* Order Summary */}
+          <CartSummary total={cartTotal} onCheckout={handleCheckout} />
         </div>
       </main>
       <Footer />
@@ -76,4 +57,4 @@ const MyCartPage = () => {
   );
 };
 
-export default MyCartPage;
+export default MyCart;

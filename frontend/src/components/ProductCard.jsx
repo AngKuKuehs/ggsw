@@ -1,7 +1,7 @@
 import React from "react";
 import { FiShoppingBag } from "react-icons/fi";
 
-const ProductCard = ({ name, price, image, rating }) => {
+const ProductCard = ({name, price, image, rating }) => {
   return (
     <div className="border rounded-xl p-4 shadow-sm hover:shadow-md transition duration-300 relative">
       {/* Product Image */}
@@ -40,3 +40,5 @@ const ProductCard = ({ name, price, image, rating }) => {
 };
 
 export default ProductCard;
+
+
