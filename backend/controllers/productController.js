@@ -3,7 +3,7 @@ import Product from "../models/productModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
     try {
-        const {name, description, price, category, quantity, brand} = req.fields;
+        const {name, description, price, category, quantity, brand, image} = req.fields;
 
         switch (true) {
             case !name:
@@ -18,6 +18,8 @@ const addProduct = asyncHandler(async (req, res) => {
                 return res.json({error: "Quantity field is empty"});
             case !brand:
                 return res.json({error: "Brand field is empty"});
+            case !image:
+                return res.json({error: "Image field is empty"});
         }
 
         const product = new Product({...req.fields});
@@ -32,7 +34,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     try {
-        const {name, description, price, category, quantity, brand} = req.fields;
+        const {name, description, price, category, quantity, brand, image} = req.fields;
 
         switch (true) {
             case !name:
@@ -47,6 +49,8 @@ const updateProduct = asyncHandler(async (req, res) => {
                 return res.json({error: "Quantity field is empty"});
             case !brand:
                 return res.json({error: "Brand field is empty"});
+            case !image:
+                return res.json({error: "Image field is empty"});
         }
 
         const product = await Product.findByIdAndUpdate(req.params.id, {...req.fields}, {new: true});

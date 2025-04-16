@@ -4,61 +4,53 @@ import Footer from "../components/footer";
 import HeroSlider from "../components/HeroSlider";
 import CategoryCard from "../components/CategoryCard";
 import ProductCard from "../components/ProductCard";
-import { Link } from "react-router-dom";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const HomePage = () => {
   const [flashDeals, setFlashDeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    // Dummy flash deal products
-    setFlashDeals([
-      {
-        id: 1,
-        name: "Meiji Milk (2L)",
-        price: 2.99,
-        rating: 4,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 2,
-        name: "Cadbury Chocolate",
-        price: 1.49,
-        rating: 5,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 3,
-        name: "Sunshine Toast",
-        price: 2.19,
-        rating: 4,
-        image: "https://via.placeholder.com/300",
-      },
-      {
-        id: 4,
-        name: "Coke Mini Cans",
-        price: 5.99,
-        rating: 5,
-        image: "https://via.placeholder.com/300",
-      },
-    ]);
 
-    // Dummy categories
-    setCategories([
-      { id: 1, name: "Vegetables", slug: "vegetables", image: "https://via.placeholder.com/200", count: 120 },
-      { id: 2, name: "Meat", slug: "meat", image: "https://via.placeholder.com/200", count: 98 },
-      { id: 3, name: "Pantry", slug: "pantry", image: "https://via.placeholder.com/200", count: 40 },
-      { id: 4, name: "Fresh Fruit", slug: "fruit", image: "https://via.placeholder.com/200", count: 77 },
-      { id: 5, name: "Bakes", slug: "bakes", image: "https://via.placeholder.com/200", count: 34 },
-    ]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/product`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        const products = data?.products || data;
+
+        const cheapest = [...products]
+          .sort((a, b) => a.price - b.price)
+          .slice(0, 4);
+
+        setFlashDeals(cheapest);
+      } catch (err) {
+        console.error("Error fetching flash deal products:", err);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/category/categories`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        setCategories(data.slice(0, 4)); // ✅ Only display 4 categories
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchProducts();
+    fetchCategories();
   }, []);
 
   return (
     <>
       <Header />
-
       <main className="bg-gray-50 min-h-screen px-6">
-        {/* Hero Banner */}
         <HeroSlider />
 
         {/* Flash Deals */}
@@ -68,15 +60,19 @@ const HomePage = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {flashDeals.map((product) => (
-              <Link to="/products" key={product.id} className="block">
+              <div key={product._id} className="relative">
+                {/* 🟡 Flash Deal Sticker */}
+                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-10 shadow">
+                  FLASH DEAL
+                </span>
                 <ProductCard
-                  id={product.id}
+                  _id={product._id}
                   name={product.name}
                   image={product.image}
                   price={product.price}
                   rating={product.rating}
                 />
-              </Link>
+              </div>
             ))}
           </div>
         </section>
@@ -86,25 +82,26 @@ const HomePage = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">Shop by Category</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {categories.map((cat) => (
               <CategoryCard
-                key={cat.id}
+                key={cat._id}
                 name={cat.name}
                 image={cat.image}
-                slug={cat.slug}
+                slug={cat.name.toLowerCase()}
               />
             ))}
           </div>
         </section>
       </main>
-
       <Footer />
     </>
   );
 };
 
 export default HomePage;
+
+
 
 
 

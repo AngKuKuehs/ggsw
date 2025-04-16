@@ -4,6 +4,8 @@ import { Link, Navigate } from "react-router-dom";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 
+const BackendURL = import.meta.env.VITE_BACKEND_URL;
+
 const Register = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -25,7 +27,7 @@ const Register = () => {
     }
   
     try {
-      const response = await fetch("http://localhost:5000/api/users/createUser", {
+      const response = await fetch(`${BackendURL}/api/users/createUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -20,7 +20,7 @@ const CheckoutPage = () => {
     phone: ""
   });  
 
-  const cartTotal = 19.96; 
+  const cartTotal = 19.96; // Static for now
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -3,10 +3,13 @@ import asyncHandler from "express-async-handler";
 
 const createCategory = asyncHandler(async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, image } = req.body;
         
         if (!name) {
             return res.json({error: "Name Field is Empty"})
+        }
+        if (!image) {
+            return res.json({error: "Image Field is Empty"})
         }
 
         const existingCategory = await categoryModel.findOne({ name })
@@ -15,7 +18,7 @@ const createCategory = asyncHandler(async (req, res) => {
             return res.json({error: "Category Already Exists"})
         }
 
-        const category = await new categoryModel({name}).save();
+        const category = await new categoryModel({name, image}).save();
         res.json(category);
     } catch (error) {
         console.log(error);
@@ -25,7 +28,7 @@ const createCategory = asyncHandler(async (req, res) => {
 
 const updateCategory = asyncHandler(async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, image } = req.body;
         const { categoryId } = req.params;
 
         const category = await categoryModel.findOne({_id: categoryId})
@@ -34,7 +37,8 @@ const updateCategory = asyncHandler(async (req, res) => {
             return res.status(404).json({error: "Category Not Found"})
         }
 
-        category.name = name
+        category.name = name;
+        category.image = image;
 
         const updatedCategory = await category.save()
         res.json(updatedCategory)

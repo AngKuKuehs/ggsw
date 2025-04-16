@@ -40,15 +40,7 @@ const ProductListingPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-<<<<<<< Updated upstream
         const res = await fetch("http://localhost:5000/api/product");
-=======
-        // Optionally, modify the fetch to include search query if backend supports it
-        const url = searchQuery
-          ? `${backendUrl}/api/product?search=${encodeURIComponent(searchQuery)}`
-          : `${backendUrl}/api/product`;
-        const res = await fetch(url);
->>>>>>> Stashed changes
         const data = await res.json();
         let fetchedProducts = data?.products || data;
 

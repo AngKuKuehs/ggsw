@@ -1,18 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/footer";
 
-const categories = [
-  { name: "Fruits", slug: "fruits", image: "/images/fruits.jpg" },
-  { name: "Vegetables", slug: "vegetables", image: "/images/vegetables.jpg" },
-  { name: "Dairy", slug: "dairy", image: "/images/dairy.jpg" },
-  { name: "Bakery", slug: "bakery", image: "/images/bakery.jpg" },
-  { name: "Meat", slug: "meat", image: "/images/meat.jpg" },
-  { name: "Beverages", slug: "beverages", image: "/images/beverages.jpg" },
-];
-
 const CategoriesPage = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/categories`, {
+          method: "GET",
+          credentials: "include"
+        });
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+  
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 py-10 px-4">
+          <div className="text-center">Loading categories...</div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Header />
@@ -24,8 +49,8 @@ const CategoriesPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {categories.map((cat) => (
             <Link
-              to={`/products?category=${cat.slug}`}
-              key={cat.slug}
+              to={`/products?category=${cat.name.toLowerCase()}`}
+              key={cat.name}
               className="bg-white rounded-lg shadow hover:shadow-md transition border"
             >
               <img
