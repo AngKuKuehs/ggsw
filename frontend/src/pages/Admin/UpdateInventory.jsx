@@ -6,12 +6,12 @@ import AdminLayout from "../../components/AdminLayout";
 const BackendURL = import.meta.env.VITE_BACKEND_URL;
 
 const CATEGORY_OPTIONS = [
-  { label: "Fruits", value: "fruits", id: "fruits_id" },
-  { label: "Vegetables", value: "vegetables", id: "67ff699c53c719ffd4a01078" },
-  { label: "Dairy", value: "dairy", id: "dairy_id" },
-  { label: "Bakery", value: "bakery", id: "bakery_id" },
-  { label: "Meat", value: "meat", id: "meat_id" },
-  { label: "Beverages", value: "beverages", id: "beverages_id" },
+  { label: "Fruits", value: "fruits", id: "67ff89c00f744a0da5e81393" },
+  { label: "Vegetables", value: "vegetables", id: "67ff89fd0f744a0da5e81397" },
+  { label: "Dairy", value: "dairy", id: "67ff8a240f744a0da5e8139b" },
+  { label: "Bakery", value: "bakery", id: "67ff8a440f744a0da5e8139f" },
+  { label: "Meat", value: "meat", id: "67ff8a530f744a0da5e813a3" },
+  { label: "Beverages", value: "beverages", id: "67ff8a660f744a0da5e813a7" },
 ];
 
 const getCategoryId = (value) =>
