@@ -49,6 +49,11 @@ const Profile = () => {
     }
   };
 
+  const handleLoginClick = () => {
+    // You can add login logic here if needed
+    navigate('/login'); // Redirect to your desired page
+  };
+
   const sidebarItems = [
     { label: "Profile", active: true },
     { label: "Payment methods", hasDot: true },
@@ -81,7 +86,13 @@ const Profile = () => {
           {/* Main Section */}
           <section className="flex-1 bg-white rounded-lg shadow-sm p-6">
             {!user ? (
-              <div className="text-gray-500 text-sm">Loading profile...</div>
+              <div className="text-gray-500 text-sm"><button
+              onClick={handleLoginClick}
+              type="button"
+              className="w-full bg-yellow-600 text-white p-3 rounded-md hover:bg-yellow-700 transition duration-200"
+            >
+              Log In
+            </button></div>
             ) : (
               <>
                 <div className="mb-6">
