@@ -1,7 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
 
-const CategoryCard = ({ name, image }) => {
+const CategoryCard = ({ name, image, slug }) => {
   return (
     <div className="bg-white border rounded-xl shadow-sm hover:shadow-md transition duration-300 p-4 text-center flex flex-col items-center justify-between">
       {/* Image */}
@@ -15,9 +16,12 @@ const CategoryCard = ({ name, image }) => {
       <h3 className="text-lg font-semibold text-gray-800 mb-3">{name}</h3>
 
       {/* CTA */}
-      <button className="flex items-center gap-2 text-sm text-green-700 hover:underline transition">
+      <Link
+        to={`/products?category=${slug}`}
+        className="flex items-center gap-2 text-sm text-green-700 hover:underline transition"
+      >
         Explore <FiArrowRight />
-      </button>
+      </Link>
     </div>
   );
 };

@@ -15,11 +15,11 @@ const UpdateInventoryPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+   // post request to backend later
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitted:", formData);
-    alert("✅ Product added! (Connect to backend)");
+    alert("Product added! (Connect to backend)");
     setFormData({ name: "", sku: "", stock: "", price: "" });
   };
 

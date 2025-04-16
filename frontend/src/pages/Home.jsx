@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import HeroSlider from "../components/HeroSlider";
-import FlashDealSection from "../components/FlashDealSection";
-import CategoryGrid from "../components/CategoryGrid";
+import CategoryCard from "../components/CategoryCard";
+import ProductCard from "../components/ProductCard";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [flashDeals, setFlashDeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    // ✅ Dummy flash deal products
+    // Dummy flash deal products
     setFlashDeals([
       {
         id: 1,
@@ -42,15 +43,14 @@ const HomePage = () => {
       },
     ]);
 
-    // ✅ Dummy categories
+    // Dummy categories
     setCategories([
-      { id: 1, name: "Vegetables", image: "https://via.placeholder.com/200", count: 120 },
-      { id: 2, name: "Meat", image: "https://via.placeholder.com/200", count: 98 },
-      { id: 3, name: "Pantry", image: "https://via.placeholder.com/200", count: 40 },
-      { id: 4, name: "Fresh Fruit", image: "https://via.placeholder.com/200", count: 77 },
-      { id: 5, name: "Bakes", image: "https://via.placeholder.com/200", count: 34 },
+      { id: 1, name: "Vegetables", slug: "vegetables", image: "https://via.placeholder.com/200", count: 120 },
+      { id: 2, name: "Meat", slug: "meat", image: "https://via.placeholder.com/200", count: 98 },
+      { id: 3, name: "Pantry", slug: "pantry", image: "https://via.placeholder.com/200", count: 40 },
+      { id: 4, name: "Fresh Fruit", slug: "fruit", image: "https://via.placeholder.com/200", count: 77 },
+      { id: 5, name: "Bakes", slug: "bakes", image: "https://via.placeholder.com/200", count: 34 },
     ]);
-
   }, []);
 
   return (
@@ -62,11 +62,41 @@ const HomePage = () => {
         <HeroSlider />
 
         {/* Flash Deals */}
-        <FlashDealSection products={flashDeals} />
+        <section className="py-10 max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800">Flash Deals</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {flashDeals.map((product) => (
+              <Link to="/products" key={product.id} className="block">
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  image={product.image}
+                  price={product.price}
+                  rating={product.rating}
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* Category Grid */}
-        <CategoryGrid categories={categories} />
-
+        <section className="py-10 max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800">Shop by Category</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {categories.map((cat) => (
+              <CategoryCard
+                key={cat.id}
+                name={cat.name}
+                image={cat.image}
+                slug={cat.slug}
+              />
+            ))}
+          </div>
+        </section>
       </main>
 
       <Footer />
@@ -75,6 +105,8 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
 
 
 
