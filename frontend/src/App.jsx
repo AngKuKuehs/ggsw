@@ -21,7 +21,7 @@ import ProductDetailsPage from "./pages/Products/ProductDescription";
 // User Pages
 import Login from "./pages/User/login";
 import Profile from "./pages/User/Profile";
-import Register from "./pages/User/Registration";
+import Register from "./pages/User/registration";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
