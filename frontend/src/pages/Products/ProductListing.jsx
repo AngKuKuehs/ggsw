@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom"; // Add useLocation
+import { useLocation } from "react-router-dom";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import ProductCard from "../../components/ProductCard";
@@ -15,21 +15,25 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); // New state for filtered products
   const [visibleCount, setVisibleCount] = useState(12);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sort, setSort] = useState("");
   const [breadcrumb, setBreadcrumb] = useState(["Home", "Shop"]);
-  const [maxPrice, setMaxPrice] = useState(100);
+  const [maxPrice, setMaxPrice] = useState(1000);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const searchQuery = new URLSearchParams(location.search).get("search")?.toLowerCase() || "";
+  const categoryParam = searchParams.get("category");
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${backendUrl}/api/category/categories`, {
-          method: "GET",
-          credentials: "include"
+          credentials: "include",
         });
         const data = await response.json();
         setCategories(data);
@@ -37,69 +41,59 @@ const ProductListingPage = () => {
         console.error("Error fetching categories:", error);
       }
     };
-
     fetchCategories();
   }, []);
 
-  const [searchParamsCat] = useSearchParams();
   useEffect(() => {
-    const categoryName = searchParamsCat.get("category");
-    if (categoryName && categories.length > 0) {
+    if (categoryParam && categories.length > 0) {
       const cat = categories.find(
-        c => c.name.toLowerCase() === categoryName.toLowerCase()
+        (c) => c.name.toLowerCase() === categoryParam.toLowerCase()
       );
       if (cat) {
         setSelectedCategories([cat._id]);
       }
-  }}, [searchParamsCat, categories]);
-
-  const location = useLocation(); // Get URL query params
-
-  // Extract search query from URL
-  const searchParams = new URLSearchParams(location.search);
-  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+    }
+  }, [categories, categoryParam]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
-          credentials: "include"
+        const response = await fetch(`${backendUrl}/api/product`, {
+          credentials: "include",
         });
-        const data = await res.json();
-        let fetchedProducts = data?.products || data;
-
-        // If backend doesn't handle search, filter client-side
-        if (searchQuery && !url.includes("search")) {
-          fetchedProducts = fetchedProducts.filter((product) =>
-            product.name?.toLowerCase().includes(searchQuery) ||
-            product.description?.toLowerCase().includes(searchQuery)
-          );
-        }
-
-        setProducts(fetchedProducts);
-        setFilteredProducts(fetchedProducts); // Initialize filtered products
+        const data = await response.json();
+        const allProducts = data.products || data;
+        setProducts(allProducts);
       } catch (err) {
         console.error("Error fetching products:", err);
       }
     };
 
     fetchProducts();
-  }, [searchQuery]); // Re-fetch or filter when searchQuery changes
+  }, []);
 
-  // Handle sorting (apply to filteredProducts)
-  useEffect(() => {
-    let sortedProducts = [...filteredProducts];
-    if (sort === "low-high") {
-      sortedProducts.sort((a, b) => a.price - b.price);
-    } else if (sort === "high-low") {
-      sortedProducts.sort((a, b) => b.price - a.price);
-    } else if (sort === "rating") {
-      sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sort === "latest") {
-      sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
-    setFilteredProducts(sortedProducts);
-  }, [sort, products]); // Re-sort when sort or products change
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesSearch =
+        !searchQuery ||
+        product.name?.toLowerCase().includes(searchQuery) ||
+        product.description?.toLowerCase().includes(searchQuery);
+
+      const matchesCategory =
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(product.category);
+
+      const matchesPrice = product.price <= maxPrice;
+
+      return matchesSearch && matchesCategory && matchesPrice;
+    })
+    .sort((a, b) => {
+      if (sort === "low-high") return a.price - b.price;
+      if (sort === "high-low") return b.price - a.price;
+      if (sort === "rating") return (b.rating || 0) - (a.rating || 0);
+      if (sort === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
+      return 0;
+    });
 
   const handleSortChange = (value) => {
     setSort(value);
@@ -113,18 +107,11 @@ const ProductListingPage = () => {
     setVisibleCount((prev) => prev + 12);
   };
 
-  const filteredProductsCat = products.filter(product =>
-    selectedCategories.length === 0 || selectedCategories.includes(product.category)
-  );
-
-
   return (
     <>
       <Header />
-
       <main className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb */}
           <Breadcrumbs
             path={breadcrumb}
             onNavigate={(seg, idx) =>
@@ -147,20 +134,25 @@ const ProductListingPage = () => {
 
               {sidebarOpen && (
                 <div className="bg-white rounded-md p-4 shadow-sm border space-y-6">
-                  {/* Category */}
+                  {/* Category Filter */}
                   <div>
                     <p className="font-medium mb-2">Category</p>
                     <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
                       {categories.map((cat) => (
                         <label key={cat._id} className="text-sm">
-                          <input type="checkbox" className="mr-2" checked={selectedCategories.includes(cat._id)}
-                                  onChange={e => {
-                                    if (e.target.checked) {
-                                      setSelectedCategories([...selectedCategories, cat._id]);
-                                    } else {
-                                      setSelectedCategories(selectedCategories.filter(c => c !== cat._id));
-                                    }
-                                  }}
+                          <input
+                            type="checkbox"
+                            className="mr-2"
+                            checked={selectedCategories.includes(cat._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedCategories([...selectedCategories, cat._id]);
+                              } else {
+                                setSelectedCategories(
+                                  selectedCategories.filter((id) => id !== cat._id)
+                                );
+                              }
+                            }}
                           />
                           {cat.name}
                         </label>
@@ -168,7 +160,7 @@ const ProductListingPage = () => {
                     </div>
                   </div>
 
-                  {/* Price Range */}
+                  {/* Price Filter */}
                   <div>
                     <p className="font-medium mb-2">Max Price: ${maxPrice}</p>
                     <input
@@ -176,12 +168,12 @@ const ProductListingPage = () => {
                       min="1"
                       max="1000"
                       value={maxPrice}
-                      onChange={(e) => setMaxPrice(e.target.value)}
+                      onChange={(e) => setMaxPrice(Number(e.target.value))}
                       className="w-full"
                     />
                   </div>
 
-                  {/* Ratings */}
+                  {/* Rating Filter (placeholder) */}
                   <div>
                     <p className="font-medium mb-2">Rating</p>
                     <div className="space-y-1">
@@ -190,7 +182,7 @@ const ProductListingPage = () => {
                           key={r}
                           className="flex items-center gap-2 text-sm cursor-pointer"
                         >
-                          <input type="radio" name="rating" />
+                          <input type="radio" name="rating" disabled />
                           <span className="flex text-yellow-400">
                             {Array.from({ length: r }).map((_, i) => (
                               <FiStar key={i} />
@@ -205,7 +197,7 @@ const ProductListingPage = () => {
               )}
             </div>
 
-            {/* Main content */}
+            {/* Product Display */}
             <div className="flex-1">
               <ProductSortBar
                 onSortChange={handleSortChange}
@@ -217,20 +209,19 @@ const ProductListingPage = () => {
                 ]}
               />
 
-              {filteredProducts.length === 0 && searchQuery ? (
+              {filteredProducts.length === 0 ? (
                 <div className="text-center py-10">
                   <p className="text-gray-600 text-lg">
-                    No matches found for "{searchQuery}".
+                    No matches found{searchQuery && ` for "${searchQuery}"`}.
                   </p>
                 </div>
               ) : (
                 <>
                   <ProductGrid
-                    products={filteredProductsCat.slice(0, visibleCount)}
+                    products={filteredProducts.slice(0, visibleCount)}
                     ProductCardComponent={ProductCard}
                   />
 
-                  {/* Show More */}
                   {visibleCount < filteredProducts.length && (
                     <div className="flex justify-center mt-8">
                       <button
@@ -247,7 +238,6 @@ const ProductListingPage = () => {
           </div>
         </div>
       </main>
-
       <Footer />
     </>
   );

@@ -21,7 +21,7 @@ import ProductDetailsPage from "./pages/Products/ProductDescription";
 // User Pages
 import Login from "./pages/User/login";
 import Profile from "./pages/User/Profile";
-import Register from "./pages/User/Registration";
+import Register from "./pages/User/registration";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -36,28 +36,25 @@ function App() {
           method: "GET",
           credentials: "include",
         });
-
         if (response.ok) {
           const data = await response.json();
           setUser(data);
-        } else {
-          console.error("Failed to fetch user profile.");
+          console.log("User data from API:", data);
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Failed to fetch user profile:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
   }, []);
 
   const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.isAdmin;
 
   if (loading) {
-    return <div className="text-center p-10">Loading...</div>; // Optional: spinner here
+    return <div>Loading...</div>; // or a loading spinner
   }
 
   return (
