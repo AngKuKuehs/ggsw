@@ -4,26 +4,38 @@ import Footer from "../components/footer";
 import CartItemCard from "../components/CartItemCard";
 import CartSummary from "../components/CartSummary";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 const MyCart = () => {
   const navigate = useNavigate();
 
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Meiji Milk (2L)",
-      price: 2.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/300",
-    },
-    {
-      id: 2,
-      name: "Cadbury Chocolate",
-      price: 1.49,
-      quantity: 2,
-      image: "https://via.placeholder.com/300",
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const initialLoad = useRef(true); // Track initial load
+
+  // Load cart items (runs once on mount)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cartItems");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        
+        // Validate data format
+        if (Array.isArray(parsed)) {
+          setCartItems(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load cart:", error);
+    }
+  }, []);
+
+  // Sync to localStorage (skips initial load)
+  useEffect(() => {
+    if (!initialLoad.current) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+    initialLoad.current = false;
+  }, [cartItems]);
 
   const handleQuantityChange = (id, quantity) => {
     if (quantity < 1) return; // Prevent 0 or negative quantities
