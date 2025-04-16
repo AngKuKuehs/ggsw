@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import AdminLayout from "../../components/AdminLayout";
@@ -7,22 +7,62 @@ import SalesGraph from "../../components/SalesGraph";
 import BestSellers from "../../components/BestSellers";
 import RecentOrders from "../../components/RecentOrders";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL
+
 const AdminDashboard = () => {
   const [graphTimeframe, setGraphTimeframe] = useState("monthly");
+  const [cardStats, setCardStats] = useState([]);
+  const [bestSellers, setTop] = useState([]);
 
-  // This data can later come from your backend
-  const cardStats = [
-    { label: "Total Orders", amount: "$126,500", change: 34.7 },
-    { label: "Active Orders", amount: "$8,400", change: 8.2 },
-    { label: "Completed Orders", amount: "$114,700", change: 30.1 },
-    { label: "Returned Orders", amount: "$3,400", change: -2.8 },
-  ];
+  const fetchJsonSafe = async (url) => {
+    const res = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+    });
+  
+    const text = await res.text();
+  
+    try {
+      return JSON.parse(text);
+    } catch {
+      console.error("❌ Not valid JSON from", url, "Raw:", text);
+      throw new Error(`Non-JSON response from ${url}`);
+    }
+  };
+  
 
-  const bestSellers = [
-    { name: "Organic Milk", price: "$2.99" },
-    { name: "Fresh Bread", price: "$3.55" },
-    { name: "Premium Basmati Rice", price: "$5.99" },
-  ];
+  const getCardStats = async () => {
+    try {
+      const totalOrders = await fetchJsonSafe(`${backendUrl}/api/order/total-orders`);
+      const totalSales = await fetchJsonSafe(`${backendUrl}/api/order/total-sales`);
+
+
+      const stats = [
+        { label: "Total Orders", amount: totalOrders.totalOrders },
+        { label: "Total Sales", amount: `\$${totalSales.totalSales}` },
+      ];
+
+      setCardStats(stats);
+    } catch (error) {
+      console.error("Failed to fetch card stats:", error);
+      alert("Failed to get some card stats.");
+    }
+  };
+
+  const getBestSellers = async () => {
+    try {
+      const topProds = await fetchJsonSafe(`${backendUrl}/api/product/top`);
+      setTop(topProds)
+    } catch (error) {
+      console.error("Failed to fetch top:", error);
+      alert("Failed to get some card stats.");
+    }
+  }
+
+  useEffect(() => {
+    getCardStats();
+    getBestSellers();
+  }, []);
 
   const recentOrders = [
     { product: "Milk", id: "#25426", date: "Nov 8, 2023", customer: "Angie", status: "Delivered", amount: "$20.00" },
