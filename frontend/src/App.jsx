@@ -27,7 +27,7 @@ function App() {
   const user = JSON.parse(localStorage.getItem("user")); 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "admin";
-ç
+
   return (
     <Routes>
       {/* Main User Pages */}
@@ -76,4 +76,3 @@ function App() {
 }
 
 export default App;
-
