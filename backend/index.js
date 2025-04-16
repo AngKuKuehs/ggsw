@@ -22,10 +22,10 @@ connectDB();
 const app = express();
 const frontendUrl = process.env.CLIENT_URL
 
-app.use(cors({
-    origin: "http://localhost:5173",  // Vite's default dev server
-    credentials: true,                // Allow cookies to be sent/received
-  }));
+// app.use(cors({
+//     origin: "http://localhost:5173",  // Vite's default dev server
+//     credentials: true,                // Allow cookies to be sent/received
+//   }));
 
 app.use(cors({
   origin: frontendUrl,
@@ -36,7 +36,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:5173' }));
+// app.use(cors({ origin: 'http://localhost:5173' }));
 
 // api routes
 app.use("/api/users", userRoutes);
